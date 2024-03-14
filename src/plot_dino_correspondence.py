@@ -10,7 +10,7 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 from omegaconf import DictConfig, OmegaConf
-from pytorch_lightning.utilities.seed import seed_everything
+import pytorch_lightning as pl
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 from matplotlib.colors import ListedColormap
@@ -67,7 +67,7 @@ def my_app(cfg: DictConfig) -> None:
     result_dir = join(cfg.output_root, "results", "correspondence")
     os.makedirs(data_dir, exist_ok=True)
     os.makedirs(log_dir, exist_ok=True)
-    seed_everything(seed=0, workers=True)
+    pl.seed_everything(seed=0, workers=True)
     high_res = 512
 
     transform = get_transform(high_res, False, "center")

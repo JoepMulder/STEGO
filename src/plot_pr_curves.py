@@ -233,7 +233,7 @@ def my_app(cfg: DictConfig) -> None:
     os.makedirs(data_dir, exist_ok=True)
     os.makedirs(log_dir, exist_ok=True)
 
-    seed_everything(seed=0, workers=True)
+    pl.seed_everything(seed=0, workers=True)
 
     train_dataset = ContrastiveSegDataset(
         pytorch_data_dir=pytorch_data_dir,

@@ -7,8 +7,8 @@ import numpy as np
 import torch.multiprocessing
 import torch.multiprocessing
 import torch.nn as nn
+import pytorch_lightning as pl
 from omegaconf import DictConfig, OmegaConf
-from pytorch_lightning.utilities.seed import seed_everything
 from tqdm import tqdm
 
 
@@ -31,7 +31,7 @@ def my_app(cfg: DictConfig) -> None:
     os.makedirs(log_dir, exist_ok=True)
     os.makedirs(join(pytorch_data_dir, "nns"), exist_ok=True)
 
-    seed_everything(seed=0)
+    pl.seed_everything(seed=0)
 
     print(data_dir)
     print(cfg.output_root)
