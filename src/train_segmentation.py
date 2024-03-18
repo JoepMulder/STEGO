@@ -397,7 +397,7 @@ class LitUnsupervisedSegmenter(pl.LightningModule):
 @hydra.main(config_path="configs", config_name="train_config.yml")
 def my_app(cfg: DictConfig) -> None:
     OmegaConf.set_struct(cfg, False)
-    print(OmegaConf.to_yaml(cfg))
+    #print(OmegaConf.to_yaml(cfg))
     pytorch_data_dir = cfg.pytorch_data_dir
     data_dir = join(cfg.output_root, "data")
     log_dir = join(cfg.output_root, "logs")
