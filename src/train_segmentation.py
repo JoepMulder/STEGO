@@ -89,13 +89,13 @@ class LitUnsupervisedSegmenter(pl.LightningModule):
         printResults = True
         if (printResults):
             print("test/cluster/")
-            self.cluster_metrics.compute()
+            print(self.cluster_metrics.compute())
             print("test/linear/")
-            self.linear_metrics.compute()
+            print(self.linear_metrics.compute())
             print("final/cluster/")
-            self.test_cluster_metrics.compute()
+            print(self.test_cluster_metrics.compute())
             print("final/linear/")
-            self.test_linear_metrics.compute()
+            print(self.test_linear_metrics.compute())
             
 
         self.linear_probe_loss_fn = torch.nn.CrossEntropyLoss()
