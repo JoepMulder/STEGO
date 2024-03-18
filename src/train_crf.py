@@ -2,6 +2,8 @@ import io
 
 import PIL.Image
 import matplotlib.pyplot as plt
+from src.data import ContrastiveSegDataset
+from src.modules import ContrastiveCRFLoss
 import torch
 from tensorboardX import SummaryWriter
 from torch.nn import Sequential, Linear, LogSoftmax
