@@ -68,6 +68,7 @@ def my_app(cfg: DictConfig) -> None:
         print(OmegaConf.to_yaml(model.cfg))
 
         run_picie = cfg.run_picie and model.cfg.dataset_name == "cocostuff27"
+        run_picie = False
         if run_picie:
             picie_state = torch.load("../saved_models/picie_and_probes.pth")
             picie = picie_state["model"].cuda()
