@@ -4,7 +4,7 @@ experiment_name: "cocostuff"
 res: 320
 batch_size: 8
 num_workers: 24
-run_picie: True
+run_picie: False
 run_crf: True
 run_prediction: True
 dark_mode: True
