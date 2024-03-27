@@ -234,7 +234,7 @@ class Coco(Dataset):
                  coarse_labels, exclude_things, subset=None):
         super(Coco, self).__init__()
         self.split = image_set
-        self.root = join(root, "cocostuff")
+        self.root = join(root, "/kaggle/input/cocostuff/cocostuff")
         self.coarse_labels = coarse_labels
         self.transform = transform
         self.label_transform = target_transform
