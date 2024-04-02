@@ -123,7 +123,7 @@ def my_app(cfg: DictConfig) -> None:
         saved_data = defaultdict(list)
         with Pool(cfg.num_workers + 5) as pool:
             for i, batch in enumerate(tqdm(test_loader)):
-                print(f'processing img {i} of {tqdm(test_loader).format_sizeof()}')
+                print(f'processing img {i} of {test_loader}')
                 with torch.no_grad():
                     img = batch["img"].cuda()
                     label = batch["label"].cuda()
