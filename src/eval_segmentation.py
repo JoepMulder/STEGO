@@ -63,6 +63,8 @@ def my_app(cfg: DictConfig) -> None:
     os.makedirs(join(result_dir, "cluster"), exist_ok=True)
     os.makedirs(join(result_dir, "picie"), exist_ok=True)
 
+    print("made directories")
+    
     for model_path in cfg.model_paths:
         model = LitUnsupervisedSegmenter.load_from_checkpoint(model_path)
         print(OmegaConf.to_yaml(model.cfg))
@@ -89,6 +91,7 @@ def my_app(cfg: DictConfig) -> None:
                                  shuffle=False, num_workers=cfg.num_workers,
                                  pin_memory=True, collate_fn=flexible_collate)
 
+        print("loaded dataset, starting model.eval.cuda()")
         model.eval().cuda()
 
         if cfg.use_ddp:
@@ -112,11 +115,15 @@ def my_app(cfg: DictConfig) -> None:
         else:
             raise ValueError("Unknown Dataset {}".format(model.cfg.dataset_name))
         batch_nums = torch.tensor([n // (cfg.batch_size * 2) for n in all_good_images])
+        print(batch_nums)
         batch_offsets = torch.tensor([n % (cfg.batch_size * 2) for n in all_good_images])
+        print(batch_offsets)
+        
 
         saved_data = defaultdict(list)
         with Pool(cfg.num_workers + 5) as pool:
             for i, batch in enumerate(tqdm(test_loader)):
+                print(f'processing img {i} of {tqdm(test_loader).format_sizeof()}')
                 with torch.no_grad():
                     img = batch["img"].cuda()
                     label = batch["label"].cuda()
@@ -146,6 +153,7 @@ def my_app(cfg: DictConfig) -> None:
 
                     if i in batch_nums:
                         matching_offsets = batch_offsets[torch.where(batch_nums == i)]
+                        print(matching_offsets)
                         for offset in matching_offsets:
                             saved_data["linear_preds"].append(linear_preds.cpu()[offset].unsqueeze(0))
                             saved_data["cluster_preds"].append(cluster_preds.cpu()[offset].unsqueeze(0))
@@ -175,9 +183,12 @@ def my_app(cfg: DictConfig) -> None:
         if cfg.dark_mode:
             plt.style.use('dark_background')
 
+        print(f"good images: {batch_list(range(len(all_good_images)))}")
         for good_images in batch_list(range(len(all_good_images)), 10):
+            
             fig, ax = plt.subplots(n_rows, len(good_images), figsize=(len(good_images) * 3, n_rows * 3))
             for i, img_num in enumerate(good_images):
+                print(f"good image loop {i}")
                 plot_img = (prep_for_plot(saved_data["img"][img_num]) * 255).numpy().astype(np.uint8)
                 plot_label = (model.label_cmap[saved_data["label"][img_num]]).astype(np.uint8)
                 Image.fromarray(plot_img).save(join(join(result_dir, "img", str(img_num) + ".jpg")))
@@ -215,5 +226,8 @@ def my_app(cfg: DictConfig) -> None:
 
 
 if __name__ == "__main__":
+    print("start prep_args")
     prep_args()
+    print("finished prep_args")
+    print("start my_app")
     my_app()
