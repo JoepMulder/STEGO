@@ -132,6 +132,7 @@ def my_app(cfg: DictConfig) -> None:
                     feats, code2 = par_model(img.flip(dims=[3]))
                     code = (code1 + code2.flip(dims=[3])) / 2
 
+                    print(f'interpolate {i}')
                     code = F.interpolate(code, label.shape[-2:], mode='bilinear', align_corners=False)
 
                     linear_probs = torch.log_softmax(model.linear_probe(code), dim=1)
@@ -144,6 +145,7 @@ def my_app(cfg: DictConfig) -> None:
                         linear_preds = linear_probs.argmax(1)
                         cluster_preds = cluster_probs.argmax(1)
 
+                    print(f'update linear&cluster {i}')
                     model.test_linear_metrics.update(linear_preds, label)
                     model.test_cluster_metrics.update(cluster_preds, label)
 
