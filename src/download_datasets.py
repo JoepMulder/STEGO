@@ -13,7 +13,7 @@ def my_app(cfg: DictConfig) -> None:
         "cityscapes",
         "cocostuff",
         "potsdamraw",
-        "VOCtrainval_11-May-2012"
+        "voc"
     ]
     url_base = "http://host.robots.ox.ac.uk/pascal/VOC/voc2012/"
 
