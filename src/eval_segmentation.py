@@ -115,9 +115,10 @@ def my_app(cfg: DictConfig) -> None:
         else:
             raise ValueError("Unknown Dataset {}".format(model.cfg.dataset_name))
         batch_nums = torch.tensor([n // (cfg.batch_size * 2) for n in all_good_images])
-        print(batch_nums)
+        print(f"batch_nums{batch_nums}")
         batch_offsets = torch.tensor([n % (cfg.batch_size * 2) for n in all_good_images])
-        print(batch_offsets)
+        
+        print(f"batch_nums{batch_nums}")
         
 
         saved_data = defaultdict(list)
@@ -166,6 +167,7 @@ def my_app(cfg: DictConfig) -> None:
                             saved_data["img"].append(img.cpu()[offset].unsqueeze(0))
                             if run_picie:
                                 saved_data["picie_preds"].append(picie_preds.cpu()[offset].unsqueeze(0))
+        
         saved_data = {k: torch.cat(v, dim=0) for k, v in saved_data.items()}
 
         tb_metrics = {
@@ -188,12 +190,14 @@ def my_app(cfg: DictConfig) -> None:
         if cfg.dark_mode:
             plt.style.use('dark_background')
 
+        print('saved data', saved_data)
         print(f"good images: {batch_list(range(len(all_good_images)))}")
         for good_images in batch_list(range(len(all_good_images)), 10):
             
             fig, ax = plt.subplots(n_rows, len(good_images), figsize=(len(good_images) * 3, n_rows * 3))
             for i, img_num in enumerate(good_images):
                 print(f"good image loop {i}")
+                
                 plot_img = (prep_for_plot(saved_data["img"][img_num]) * 255).numpy().astype(np.uint8)
                 plot_label = (model.label_cmap[saved_data["label"][img_num]]).astype(np.uint8)
                 Image.fromarray(plot_img).save(join(join(result_dir, "img", str(img_num) + ".jpg")))
