@@ -1,5 +1,6 @@
 output_root: '../'
-model_path: "../saved_models/cocostuff27_vit_base_5.ckpt"
+# model_path: "../saved_models/cocostuff27_vit_base_5.ckpt"
+model_path: "../saved_models/voc"
 image_dir: "/datadrive/pytorch-data/cocostuff/images/val2017"
 experiment_name: "cocostuff_val"
 res: 320
