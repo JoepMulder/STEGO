@@ -476,6 +476,10 @@ class ContrastiveSegDataset(Dataset):
             self.n_classes = 27
             dataset_class = CroppedDataset
             extra_args = dict(dataset_name="cocostuff27", crop_type=cfg.crop_type, crop_ratio=cfg.crop_ratio)
+        elif dataset_name == "voc":
+            self.n_classes = 21
+            dataset_class = CroppedDataset
+            extra_args = dict(dataset_name="voc", crop_type=cfg.crop_type, crop_ratio=cfg.crop_ratio)
         elif dataset_name == "cocostuff27" and crop_type is None:
             self.n_classes = 27
             dataset_class = Coco
