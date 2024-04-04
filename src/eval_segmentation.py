@@ -209,12 +209,12 @@ def my_app(cfg: DictConfig) -> None:
             remove_axes(ax)
             plt.tight_layout()
             plt.show()
-            plt.savefig(f"results/reproduce/figure{i}.png")
+            plt.savefig(f"../STEGO/results/reproduce/figure{i}.png")
             plt.clf()
 
         plot_cm(model.test_cluster_metrics.histogram, model.label_cmap, model.cfg)
         plt.show()
-        plt.savefig(f"results/reproduce/final.png")
+        plt.savefig(f"../STEGO/results/reproduce/final.png")
         plt.clf()
 
 
