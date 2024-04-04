@@ -62,8 +62,6 @@ def my_app(cfg: DictConfig) -> None:
     os.makedirs(join(result_dir, "label"), exist_ok=True)
     os.makedirs(join(result_dir, "cluster"), exist_ok=True)
     os.makedirs(join(result_dir, "picie"), exist_ok=True)
-
-    print("made directories")
     
     for model_path in cfg.model_paths:
         model = LitUnsupervisedSegmenter.load_from_checkpoint(model_path)
@@ -115,16 +113,11 @@ def my_app(cfg: DictConfig) -> None:
         else:
             raise ValueError("Unknown Dataset {}".format(model.cfg.dataset_name))
         batch_nums = torch.tensor([n // (cfg.batch_size * 2) for n in all_good_images])
-        print(f"batch_nums{batch_nums}")
         batch_offsets = torch.tensor([n % (cfg.batch_size * 2) for n in all_good_images])
-        
-        print(f"batch_nums{batch_nums}")
-        
 
         saved_data = defaultdict(list)
         with Pool(cfg.num_workers + 5) as pool:
             for i, batch in enumerate(tqdm(test_loader)):
-                print(f'processing img {i} of {test_loader}')
                 with torch.no_grad():
                     img = batch["img"].cuda()
                     label = batch["label"].cuda()
@@ -133,23 +126,17 @@ def my_app(cfg: DictConfig) -> None:
                     feats, code2 = par_model(img.flip(dims=[3]))
                     code = (code1 + code2.flip(dims=[3])) / 2
 
-                    print(f'interpolate {i}')
                     code = F.interpolate(code, label.shape[-2:], mode='bilinear', align_corners=False)
-                    print(f'softmax {i}')
                     linear_probs = torch.log_softmax(model.linear_probe(code), dim=1)
-                    print(f'clusterprobe {i}')
                     cluster_probs = model.cluster_probe(code, 2, log_probs=True)
 
                     if cfg.run_crf:
-                        print(f'batched_crf 1 {i}')
                         linear_preds = batched_crf(pool, img, linear_probs).argmax(1).cuda()
-                        print(f'batched_crf 2 {i}')
                         cluster_preds = batched_crf(pool, img, cluster_probs).argmax(1).cuda()
                     else:
                         linear_preds = linear_probs.argmax(1)
                         cluster_preds = cluster_probs.argmax(1)
 
-                    print(f'update linear&cluster {i}')
                     model.test_linear_metrics.update(linear_preds, label)
                     model.test_cluster_metrics.update(cluster_preds, label)
 
@@ -175,7 +162,6 @@ def my_app(cfg: DictConfig) -> None:
             **model.test_cluster_metrics.compute(),
         }
 
-        print("")
         print(model_path)
         print(tb_metrics)
 
@@ -190,14 +176,10 @@ def my_app(cfg: DictConfig) -> None:
         if cfg.dark_mode:
             plt.style.use('dark_background')
 
-        print('saved data', saved_data)
-        print(f"good images: {batch_list(range(len(all_good_images)))}")
         for good_images in batch_list(range(len(all_good_images)), 10):
             
             fig, ax = plt.subplots(n_rows, len(good_images), figsize=(len(good_images) * 3, n_rows * 3))
             for i, img_num in enumerate(good_images):
-                print(f"good image loop {i}")
-                
                 plot_img = (prep_for_plot(saved_data["img"][img_num]) * 255).numpy().astype(np.uint8)
                 plot_label = (model.label_cmap[saved_data["label"][img_num]]).astype(np.uint8)
                 Image.fromarray(plot_img).save(join(join(result_dir, "img", str(img_num) + ".jpg")))
@@ -227,10 +209,12 @@ def my_app(cfg: DictConfig) -> None:
             remove_axes(ax)
             plt.tight_layout()
             plt.show()
+            plt.savefig(f"results/reproduce/figure{i}.png")
             plt.clf()
 
         plot_cm(model.test_cluster_metrics.histogram, model.label_cmap, model.cfg)
         plt.show()
+        plt.savefig(f"results/reproduce/final.png")
         plt.clf()
 
 
