@@ -134,12 +134,15 @@ def my_app(cfg: DictConfig) -> None:
 
                     print(f'interpolate {i}')
                     code = F.interpolate(code, label.shape[-2:], mode='bilinear', align_corners=False)
-
+                    print(f'softmax {i}')
                     linear_probs = torch.log_softmax(model.linear_probe(code), dim=1)
+                    print(f'clusterprobe {i}')
                     cluster_probs = model.cluster_probe(code, 2, log_probs=True)
 
                     if cfg.run_crf:
+                        print(f'batched_crf 1 {i}')
                         linear_preds = batched_crf(pool, img, linear_probs).argmax(1).cuda()
+                        print(f'batched_crf 2 {i}')
                         cluster_preds = batched_crf(pool, img, cluster_probs).argmax(1).cuda()
                     else:
                         linear_preds = linear_probs.argmax(1)
