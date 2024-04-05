@@ -35,7 +35,9 @@ def my_app(cfg: DictConfig) -> None:
 
     model = LitUnsupervisedSegmenter.load_from_checkpoint("../saved_models/potsdam_test.ckpt")
     print(OmegaConf.to_yaml(model.cfg))
+    print("checkpoint 1")
     model.eval().cuda()
+    print("checkpoint eval cuda")
     par_model = torch.nn.DataParallel(model.net)
 
     outputs = defaultdict(list)
@@ -61,16 +63,18 @@ def my_app(cfg: DictConfig) -> None:
             outputs['cluster_pred'].append(cluster_pred.cpu())
             outputs['cluster_prob'].append(cluster_prob.cpu())
     
+    print("checkpoint 1")
     metrics = model.test_cluster_metrics.compute()
     print(metrics)
 
     img_num = 6
+    print("checkpoint 4")
     outputs = {k: torch.cat(v, dim=0)[15 * 15 * img_num:15 * 15 * (img_num + 1)] for k, v in outputs.items()}
-
+    print("checkpoint 5")
     full_image = outputs['img'].reshape(15, 15, 3, 320, 320) \
         .permute(2, 0, 3, 1, 4) \
         .reshape(3, 320 * 15, 320 * 15)
-
+    print("checkpoint 9")
     full_cluster_prob = outputs['cluster_prob'].reshape(15, 15, 3, 320, 320) \
         .permute(2, 0, 3, 1, 4) \
         .reshape(3, 320 * 15, 320 * 15)
@@ -78,6 +82,7 @@ def my_app(cfg: DictConfig) -> None:
     # crf_probs = dense_crf(full_image.cpu().detach(),
     #                       full_cluster_prob.cpu().detach())
     crf_probs = full_cluster_prob.numpy()
+    print("checkpoint crf_probs")
     print(crf_probs.shape)
 
     reshaped_label = outputs['label'].reshape(15, 15, 320, 320).permute(0, 2, 1, 3).reshape(320 * 15, 320 * 15)
@@ -89,6 +94,7 @@ def my_app(cfg: DictConfig) -> None:
     ax[1].imshow(reshaped_preds)
     ax[2].imshow(reshaped_label)
 
+    print("checkpoint 3")
     Image.fromarray(reshaped_img.cuda()).save(join(join(result_dir, "img", str(img_num) + ".png")))
     Image.fromarray(reshaped_preds).save(join(join(result_dir, "cluster", str(img_num) + ".png")))
 
