@@ -66,7 +66,8 @@ def my_app(cfg: DictConfig) -> None:
     for model_path in cfg.model_paths:
         model = LitUnsupervisedSegmenter.load_from_checkpoint(model_path)
         print(OmegaConf.to_yaml(model.cfg))
-
+        print(f"model.cfg.dataset_name: {model.cfg.dataset_name}")
+        
         run_picie = cfg.run_picie and model.cfg.dataset_name == "cocostuff27"
         if run_picie:
             picie_state = torch.load("../saved_models/picie_and_probes.pth")
@@ -214,7 +215,7 @@ def my_app(cfg: DictConfig) -> None:
 
         plot_cm(model.test_cluster_metrics.histogram, model.label_cmap, model.cfg)
         plt.show()
-        plt.savefig(f"../STEGO/results/reproduce/final.png")
+        plt.savefig(f"../STEGO/results/reproduce/{model.cfg.dataset_name}_final.png")
         plt.clf()
 
 
