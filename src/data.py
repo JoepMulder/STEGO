@@ -182,7 +182,7 @@ class PotsdamRaw(Dataset):
     def __init__(self, root, image_set, transform, target_transform, coarse_labels):
         super(PotsdamRaw, self).__init__()
         self.split = image_set
-        self.root = os.path.join(root, "potsdamraw", "processed")
+        self.root = os.path.join(root, "/kaggle/input/potsdamraw/potsdamraw", "processed")
         self.transform = transform
         self.target_transform = target_transform
         self.files = []

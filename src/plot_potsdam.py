@@ -60,7 +60,9 @@ def my_app(cfg: DictConfig) -> None:
             outputs['label'].append(label.cpu())
             outputs['cluster_pred'].append(cluster_pred.cpu())
             outputs['cluster_prob'].append(cluster_prob.cpu())
-    model.test_cluster_metrics.compute()
+    
+    metrics = model.test_cluster_metrics.compute()
+    print(metrics)
 
     img_num = 6
     outputs = {k: torch.cat(v, dim=0)[15 * 15 * img_num:15 * 15 * (img_num + 1)] for k, v in outputs.items()}
@@ -91,6 +93,7 @@ def my_app(cfg: DictConfig) -> None:
     Image.fromarray(reshaped_preds).save(join(join(result_dir, "cluster", str(img_num) + ".png")))
 
     remove_axes(ax)
+    plt.savefig(f"../STEGO/results/reproduce/potsdam.png")
     plt.show()
 
 if __name__ == "__main__":
