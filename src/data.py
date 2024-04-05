@@ -326,7 +326,7 @@ class CityscapesSeg(Dataset):
     def __init__(self, root, image_set, transform, target_transform):
         super(CityscapesSeg, self).__init__()
         self.split = image_set
-        self.root = join(root, "cityscapes")
+        self.root = join(root, "/kaggle/input/cityscapes/cityscapes")
         if image_set == "train":
             # our_image_set = "train_extra"
             # mode = "coarse"
