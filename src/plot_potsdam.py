@@ -43,7 +43,7 @@ def my_app(cfg: DictConfig) -> None:
     outputs = defaultdict(list)
     for i, batch in enumerate(tqdm(test_loader)):
         with torch.no_grad():
-            if i > 100:
+            if i > 80:
                 break
 
             img = batch["img"].cuda()
